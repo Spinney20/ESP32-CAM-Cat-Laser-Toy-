@@ -3,8 +3,8 @@
 #include <ESP32Servo.h>
 
 // ─── WiFi ─────────────────────────────────────────────────────────
-const char* ssid     = "DIGI-Q592";
-const char* password = "AuKF5skK7Y";
+const char* ssid     = "ssid";
+const char* password = "password";
 
 // ─── Pinii camerei AI-Thinker ─────────────────────────────────────
 #define PWDN_GPIO_NUM     32
