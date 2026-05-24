@@ -1,10 +1,12 @@
 #include "esp_camera.h"
 #include <WiFi.h>
 #include <ESP32Servo.h>
+#include <ESPmDNS.h>
+#include <DHT.h>
 
 // ─── WiFi ─────────────────────────────────────────────────────────
 const char* ssid     = "ssid";
-const char* password = "password";
+const char* password = "passw";
 
 // ─── Pinii camerei AI-Thinker ─────────────────────────────────────
 #define PWDN_GPIO_NUM     32
@@ -31,10 +33,16 @@ const char* password = "password";
 // ─── Laser ────────────────────────────────────────────────────────
 #define LASER_PIN        13
 
+// senzor temp si umid
+#define DHT_PIN    2
+#define DHT_TYPE   DHT11
+
 Servo servoPan;
 Servo servoTilt;
 int   panAngle  = 90;
 int   tiltAngle = 20;
+
+DHT dht(DHT_PIN, DHT_TYPE);
 
 void startCameraServer();
 
@@ -58,6 +66,9 @@ void setup() {
   servoTilt.write(tiltAngle);
   Serial.println("Servos OK");
 
+  dht.begin();
+  Serial.println("DHT11 OK");
+
   // Camera
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
@@ -78,22 +89,13 @@ void setup() {
   config.pin_sccb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn     = PWDN_GPIO_NUM;
   config.pin_reset    = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 20000000;
-  config.frame_size   = FRAMESIZE_UXGA;
+  config.xclk_freq_hz = 12000000;
+  config.frame_size   = FRAMESIZE_VGA;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.grab_mode    = CAMERA_GRAB_WHEN_EMPTY;
+  config.grab_mode    = CAMERA_GRAB_LATEST;
   config.fb_location  = CAMERA_FB_IN_PSRAM;
   config.jpeg_quality = 12;
-  config.fb_count     = 1;
-
-  if (psramFound()) {
-    config.jpeg_quality = 10;
-    config.fb_count     = 2;
-    config.grab_mode    = CAMERA_GRAB_LATEST;
-  } else {
-    config.frame_size  = FRAMESIZE_SVGA;
-    config.fb_location = CAMERA_FB_IN_DRAM;
-  }
+  config.fb_count     = 2;
 
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
@@ -101,9 +103,6 @@ void setup() {
     return;
   }
   Serial.println("Camera OK");
-
-  sensor_t *s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_QVGA);
 
   // WiFi
   WiFi.begin(ssid, password);
@@ -116,6 +115,9 @@ void setup() {
   Serial.println("\nWiFi connected!");
 
   startCameraServer();
+
+  MDNS.begin("catlasertoy");
+  Serial.println("mDNS: http://catlasertoy.local");
 
   Serial.printf("\nCamera stream : http://%s\n",        WiFi.localIP().toString().c_str());
   Serial.printf("Pan/Tilt ctrl : http://%s\n",          WiFi.localIP().toString().c_str());
