@@ -4,11 +4,11 @@
 #include <ESPmDNS.h>
 #include <DHT.h>
 
-// ─── WiFi ─────────────────────────────────────────────────────────
+// WiFi
 const char* ssid     = "ssid";
 const char* password = "passwd";
 
-// ─── Pinii camerei AI-Thinker ────────────────────────────────────
+// Pinii camerei AI-Thinker
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
