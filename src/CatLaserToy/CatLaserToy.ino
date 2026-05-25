@@ -6,9 +6,9 @@
 
 // ─── WiFi ─────────────────────────────────────────────────────────
 const char* ssid     = "ssid";
-const char* password = "passw";
+const char* password = "passwd";
 
-// ─── Pinii camerei AI-Thinker ─────────────────────────────────────
+// ─── Pinii camerei AI-Thinker ────────────────────────────────────
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -26,11 +26,11 @@ const char* password = "passw";
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
-// ─── Servo ────────────────────────────────────────────────────────
+// Servo
 #define SERVO_PAN_PIN    14
 #define SERVO_TILT_PIN   15
 
-// ─── Laser ────────────────────────────────────────────────────────
+//Laser
 #define LASER_PIN        13
 
 // senzor temp si umid
