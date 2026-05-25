@@ -7,14 +7,14 @@
 #include <DHT.h>
 
 
-// ─── Referinte din .ino ───────────────────────────────────────────
+// Referinte din .ino
 extern Servo servoPan;
 extern Servo servoTilt;
 extern int   panAngle;
 extern int   tiltAngle;
 extern DHT   dht;
 
-// ─── DHT cache (non-blocking) ─────────────────────────────────────
+// DHT cache (non-blocking)
 volatile float cachedTemp = 0.0;
 volatile float cachedHum  = 0.0;
 volatile bool  cachedOk   = false;
@@ -25,7 +25,7 @@ volatile bool  cachedOk   = false;
 #define TILT_MIN                0
 #define TILT_MAX              150
 
-// ─── Smooth movement ──────────────────────────────────────────────
+// Smooth movement
 // Mai mare = mai LENT (mai smooth). Mai mic = mai RAPID.
 // 50 ms = 20 grade/secunda, 30 ms = 33 grade/secunda, 80 ms = 12 grade/secunda
 #define SERVO_SMOOTH_DELAY     50
@@ -37,7 +37,7 @@ volatile int  panDir         = 0;   // -1 stanga, 0 stop, +1 dreapta
 volatile int  tiltDir        = 0;   // -1 jos, 0 stop, +1 sus
 volatile bool returningHome  = false;
 
-// ─── Stream MJPEG ─────────────────────────────────────────────────
+// Stream MJPEG
 #define PART_BOUNDARY "123456789000000000000987654321"
 static const char* STREAM_CONTENT_TYPE =
     "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
@@ -72,7 +72,7 @@ static esp_err_t stream_handler(httpd_req_t *req) {
   return res;
 }
 
-// ─── Servo smooth task ────────────────────────────────────────────
+// Servo smooth task
 static void servoSmoothTask(void *param) {
   while (true) {
     if (returningHome) {
@@ -108,7 +108,7 @@ static void servoSmoothTask(void *param) {
   }
 }
 
-// ─── DHT task (non-blocking) ──────────────────────────────────────
+// DHT task (non-blocking)
 static void dhtTask(void *param) {
   while (true) {
     float t = dht.readTemperature();
@@ -122,7 +122,7 @@ static void dhtTask(void *param) {
   }
 }
 
-// ─── Move handler ─────────────────────────────────────────────────
+// Move handler 
 // GET /move?dir=left|right|up|down|stop|center
 static esp_err_t move_handler(httpd_req_t *req) {
   char buf[60];
@@ -153,7 +153,7 @@ static esp_err_t move_handler(httpd_req_t *req) {
   return ESP_OK;
 }
 
-// ─── Laser handler ────────────────────────────────────────────────
+// Laser handler
 // GET /laser?state=on   sau   GET /laser?state=off
 static esp_err_t laser_handler(httpd_req_t *req) {
   char buf[40];
@@ -179,7 +179,7 @@ static esp_err_t laser_handler(httpd_req_t *req) {
   return ESP_OK;
 }
 
-// ─── Climate handler (DHT11) ──────────────────────────────────────
+// Climate handler (DHT11)
 // GET /climate - returneaza valorile din cache (non-blocking)
 static esp_err_t climate_handler(httpd_req_t *req) {
   char json[80];
@@ -195,7 +195,7 @@ static esp_err_t climate_handler(httpd_req_t *req) {
   return ESP_OK;
 }
 
-// ─── HTML ─────────────────────────────────────────────────────────
+// HTML
 static const char HTML_PAGE[] PROGMEM = R"rawhtml(
 <!DOCTYPE html>
 <html>
@@ -294,7 +294,7 @@ static const char HTML_PAGE[] PROGMEM = R"rawhtml(
 document.getElementById('stream').src =
     'http://' + location.hostname + ':81/stream';
 
-// ── Miscare smooth - tine apasat ──────────────────────────────────
+// Miscare smooth - tine apasat
 function move(dir) {
   fetch('/move?dir=' + dir)
     .then(r => r.json())
@@ -371,7 +371,7 @@ document.addEventListener('keyup', e => {
   }
 });
 
-// ── Laser toggle ───────────────────────────────────────────────────
+// Laser toggle 
 let laserOn = false;
 
 function toggleLaser() {
@@ -389,7 +389,7 @@ function toggleLaser() {
   }
 }
 
-// ── Climate polling - la fiecare 10 secunde ───────────────────────
+// Climate polling - la fiecare 10 secunde
 function updateClimate() {
   fetch('/climate')
     .then(r => r.json())
@@ -415,7 +415,7 @@ static esp_err_t index_handler(httpd_req_t *req) {
   return ESP_OK;
 }
 
-// ─── Start server ─────────────────────────────────────────────────
+//Start server
 void startCameraServer() {
   httpd_handle_t stream_httpd = NULL;
   httpd_handle_t camera_httpd = NULL;
